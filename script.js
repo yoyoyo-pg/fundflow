@@ -153,7 +153,7 @@ function calculateRetirement() {
   }
 
   const annualGap = (expenses - pension) * 12;
-  const startBalance = isSurplus ? 0 : selfFunding;
+  const startBalance = isSurplus ? Math.max(0, annualGap) * period : selfFunding;
   const rows = [];
 
   for (let y = 0; y <= period; y++) {
