@@ -71,6 +71,7 @@ function calculate() {
   const monthly = parseFloat(document.getElementById('monthlyAmount').value) || 0;
   const rate = (parseFloat(document.getElementById('annualRate').value) || 0) / 100;
   const years = parseInt(document.getElementById('years').value) || 1;
+  const currentAge = parseInt(document.getElementById('currentAge').value) || 0;
   const isCompound = getInterestType() === 'compound';
 
   const data = isCompound
@@ -85,18 +86,21 @@ function calculate() {
   document.getElementById('totalAmount').textContent = fmt(last.total);
   document.getElementById('multiplier').textContent = multiplier + '倍';
 
-  renderInvestmentChart(data);
-  renderInvestmentTable(data);
+  renderInvestmentChart(data, currentAge);
+  renderInvestmentTable(data, currentAge);
   document.getElementById('results').style.display = '';
 }
 
-function renderInvestmentChart(data) {
+function renderInvestmentChart(data, currentAge) {
   if (chart) chart.destroy();
   const ctx = document.getElementById('growthChart').getContext('2d');
+  const labels = data.map(r =>
+    currentAge > 0 ? (currentAge + r.year) + '歳' : r.year + '年'
+  );
   chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.map(r => r.year + '年'),
+      labels,
       datasets: [
         {
           label: '資産合計',
@@ -131,10 +135,13 @@ function renderInvestmentChart(data) {
   });
 }
 
-function renderInvestmentTable(data) {
+function renderInvestmentTable(data, currentAge) {
+  const showAge = currentAge > 0;
+  document.querySelector('#tab-investment thead tr').cells[0].textContent =
+    showAge ? '年齢' : '年';
   document.getElementById('tableBody').innerHTML = data.map(r => `
     <tr>
-      <td>${r.year}</td>
+      <td>${showAge ? (currentAge + r.year) + '歳' : r.year}</td>
       <td>${fmt(r.principal)}</td>
       <td>${fmt(r.profit)}</td>
       <td>${fmt(r.total)}</td>
