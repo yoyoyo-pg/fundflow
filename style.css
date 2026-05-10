@@ -523,12 +523,36 @@ footer p {
   margin: 0 auto;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .card { padding: 20px; }
-  .form-grid { grid-template-columns: 1fr; }
-  .summary-grid { grid-template-columns: 1fr 1fr; }
-  .summary-value { font-size: 1.15rem; }
-  .chart-wrapper { height: 240px; }
+/* 6.1インチ（390px / iPhone 14・15 標準）基準 */
+@media (max-width: 430px) {
+  .container { padding: 0 14px; }
+  .card { padding: 18px 14px; }
   .tagline { display: none; }
+
+  /* タブ */
+  .tab-btn { padding: 11px 14px; font-size: 0.8rem; gap: 5px; }
+  .tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* フォーム */
+  .form-grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 1rem; }
+
+  /* サマリーカード */
+  .summary-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .summary-card { padding: 14px 12px; }
+  .summary-label { font-size: 0.65rem; letter-spacing: 0.02em; }
+  .summary-value { font-size: 1rem; letter-spacing: -0.3px; }
+
+  /* グラフ */
+  .chart-wrapper { height: 220px; }
+  .chart-header { flex-direction: column; align-items: flex-start; }
+  .chart-legend { gap: 10px; }
+
+  /* テーブル */
+  thead th { padding: 10px 10px; font-size: 0.72rem; }
+  tbody td  { padding: 8px 10px; font-size: 0.8rem; }
+
+  /* 複利/単利トグル */
+  .interest-type-group { flex-wrap: wrap; gap: 10px; }
+  .toggle-option span { padding: 6px 14px; }
 }
