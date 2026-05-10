@@ -24,13 +24,11 @@ function buildYearlyData(initial, monthly, rate, years) {
   const rows = [];
   let principal = initial;
   let total = initial;
-  const monthlyRate = rate / 12;
 
   for (let y = 1; y <= years; y++) {
-    for (let m = 0; m < 12; m++) {
-      total = (total + monthly) * (1 + monthlyRate);
-      principal += monthly;
-    }
+    // 年初に積立分を追加してから年利を適用（年次複利）
+    total = (total + monthly * 12) * (1 + rate);
+    principal += monthly * 12;
     rows.push({
       year: y,
       principal: Math.round(principal),
