@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FundFlow - 投資シミュレーター</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="#4F46E5"/>
+          <path d="M6 22 L12 14 L18 17 L26 8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="26" cy="8" r="2.5" fill="#A5F3FC"/>
+        </svg>
+        <span class="logo-text">FundFlow</span>
+      </div>
+      <p class="tagline">かんたん投資シミュレーター</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card input-card">
+      <h2 class="section-title">シミュレーション設定</h2>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="initialAmount">初期投資額</label>
+          <div class="input-wrapper">
+            <span class="unit prefix">¥</span>
+            <input type="number" id="initialAmount" value="1000000" min="0" step="10000">
+          </div>
+          <span class="hint">例：100万円 → 1,000,000</span>
+        </div>
+
+        <div class="form-group">
+          <label for="monthlyAmount">毎月の積立額</label>
+          <div class="input-wrapper">
+            <span class="unit prefix">¥</span>
+            <input type="number" id="monthlyAmount" value="30000" min="0" step="1000">
+          </div>
+          <span class="hint">積み立てない場合は 0</span>
+        </div>
+
+        <div class="form-group">
+          <label for="annualRate">年利率</label>
+          <div class="input-wrapper">
+            <input type="number" id="annualRate" value="5" min="0" max="100" step="0.1">
+            <span class="unit suffix">%</span>
+          </div>
+          <span class="hint">例：S&amp;P500の長期平均 ≈ 7〜10%</span>
+        </div>
+
+        <div class="form-group">
+          <label for="years">運用年数</label>
+          <div class="input-wrapper">
+            <input type="number" id="years" value="20" min="1" max="50" step="1">
+            <span class="unit suffix">年</span>
+          </div>
+          <span class="hint">1〜50年</span>
+        </div>
+      </div>
+
+      <div class="interest-type-group">
+        <span class="interest-type-label">計算方式</span>
+        <div class="toggle-group">
+          <label class="toggle-option">
+            <input type="radio" name="interestType" value="compound" checked>
+            <span>複利</span>
+          </label>
+          <label class="toggle-option">
+            <input type="radio" name="interestType" value="simple">
+            <span>単利</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-calculate" id="calculateBtn" onclick="calculate()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/>
+          <path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/>
+        </svg>
+        計算する
+      </button>
+    </section>
+
+    <section class="results" id="results">
+      <div class="summary-grid">
+        <div class="summary-card principal">
+          <span class="summary-label">元本合計</span>
+          <span class="summary-value" id="totalPrincipal">—</span>
+        </div>
+        <div class="summary-card profit">
+          <span class="summary-label">運用益</span>
+          <span class="summary-value" id="totalProfit">—</span>
+        </div>
+        <div class="summary-card total">
+          <span class="summary-label">最終資産</span>
+          <span class="summary-value" id="totalAmount">—</span>
+        </div>
+        <div class="summary-card rate">
+          <span class="summary-label">資産倍率</span>
+          <span class="summary-value" id="multiplier">—</span>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="chart-header">
+          <h3>資産推移グラフ</h3>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot dot-total"></span>最終資産</span>
+            <span class="legend-item"><span class="legend-dot dot-principal"></span>元本</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="growthChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <h3>年別内訳</h3>
+        <div class="table-wrapper">
+          <table id="breakdownTable">
+            <thead>
+              <tr>
+                <th>年</th>
+                <th>元本累計</th>
+                <th>運用益</th>
+                <th>資産合計</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>※ このシミュレーターは参考情報の提供を目的としており、投資の成果を保証するものではありません。実際の運用では税金・手数料等が発生します。</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
