@@ -83,7 +83,8 @@ header .container {
 
 /* Main layout */
 main {
-  padding: 32px 20px;
+  padding-top: 32px;
+  padding-bottom: 32px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -427,6 +428,7 @@ tbody tr:last-child td {
 .tabs-nav .container {
   display: flex;
   gap: 0;
+  overflow: hidden;
 }
 
 .tab-btn {
@@ -443,6 +445,7 @@ tbody tr:last-child td {
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .tab-btn:hover { color: var(--primary); }
@@ -529,9 +532,20 @@ footer p {
   .card { padding: 18px 14px; }
   .tagline { display: none; }
 
-  /* タブ */
-  .tab-btn { padding: 11px 14px; font-size: 0.8rem; gap: 5px; }
-  .tab-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  /* タブ：均等幅・アイコン上＋テキスト下の縦積み */
+  .tab-btn {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    white-space: normal;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 0.72rem;
+    gap: 3px;
+    min-width: 0;
+  }
+  .tab-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   /* フォーム */
   .form-grid { grid-template-columns: 1fr; }
