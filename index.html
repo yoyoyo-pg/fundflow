@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FundFlow - 投資シミュレーター</title>
+  <title>FundFlow - 投資・老後資金シミュレーター</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -18,130 +18,277 @@
         </svg>
         <span class="logo-text">FundFlow</span>
       </div>
-      <p class="tagline">かんたん投資シミュレーター</p>
+      <p class="tagline">かんたん投資・老後資金シミュレーター</p>
     </div>
   </header>
 
-  <main class="container">
-    <section class="card input-card">
-      <h2 class="section-title">シミュレーション設定</h2>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="initialAmount">初期投資額</label>
-          <div class="input-wrapper">
-            <span class="unit prefix">¥</span>
-            <input type="number" id="initialAmount" value="1000000" min="0" step="10000">
-          </div>
-          <span class="hint">例：100万円 → 1,000,000</span>
-        </div>
-
-        <div class="form-group">
-          <label for="monthlyAmount">毎月の積立額</label>
-          <div class="input-wrapper">
-            <span class="unit prefix">¥</span>
-            <input type="number" id="monthlyAmount" value="30000" min="0" step="1000">
-          </div>
-          <span class="hint">積み立てない場合は 0</span>
-        </div>
-
-        <div class="form-group">
-          <label for="annualRate">年利率</label>
-          <div class="input-wrapper">
-            <input type="number" id="annualRate" value="5" min="0" max="100" step="0.1">
-            <span class="unit suffix">%</span>
-          </div>
-          <span class="hint">例：S&amp;P500の長期平均 ≈ 7〜10%</span>
-        </div>
-
-        <div class="form-group">
-          <label for="years">運用年数</label>
-          <div class="input-wrapper">
-            <input type="number" id="years" value="20" min="1" max="50" step="1">
-            <span class="unit suffix">年</span>
-          </div>
-          <span class="hint">1〜50年</span>
-        </div>
-      </div>
-
-      <div class="interest-type-group">
-        <span class="interest-type-label">計算方式</span>
-        <div class="toggle-group">
-          <label class="toggle-option">
-            <input type="radio" name="interestType" value="compound" checked>
-            <span>複利</span>
-          </label>
-          <label class="toggle-option">
-            <input type="radio" name="interestType" value="simple">
-            <span>単利</span>
-          </label>
-        </div>
-      </div>
-
-      <button class="btn-calculate" id="calculateBtn" onclick="calculate()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/>
-          <path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/>
+  <nav class="tabs-nav">
+    <div class="container">
+      <button class="tab-btn active" onclick="switchTab('investment')" id="tab-btn-investment">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+          <polyline points="16 7 22 7 22 13"/>
         </svg>
-        計算する
+        投資シミュレーター
       </button>
-    </section>
+      <button class="tab-btn" onclick="switchTab('retirement')" id="tab-btn-retirement">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        老後資金シミュレーター
+      </button>
+    </div>
+  </nav>
 
-    <section class="results" id="results">
-      <div class="summary-grid">
-        <div class="summary-card principal">
-          <span class="summary-label">元本合計</span>
-          <span class="summary-value" id="totalPrincipal">—</span>
-        </div>
-        <div class="summary-card profit">
-          <span class="summary-label">運用益</span>
-          <span class="summary-value" id="totalProfit">—</span>
-        </div>
-        <div class="summary-card total">
-          <span class="summary-label">最終資産</span>
-          <span class="summary-value" id="totalAmount">—</span>
-        </div>
-        <div class="summary-card rate">
-          <span class="summary-label">資産倍率</span>
-          <span class="summary-value" id="multiplier">—</span>
-        </div>
-      </div>
+  <main class="container">
 
-      <div class="card chart-card">
-        <div class="chart-header">
-          <h3>資産推移グラフ</h3>
-          <div class="chart-legend">
-            <span class="legend-item"><span class="legend-dot dot-total"></span>最終資産</span>
-            <span class="legend-item"><span class="legend-dot dot-principal"></span>元本</span>
+    <!-- ── 投資シミュレーター ── -->
+    <div id="tab-investment" class="tab-panel active">
+      <section class="card input-card">
+        <h2 class="section-title">シミュレーション設定</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="initialAmount">初期投資額</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="initialAmount" value="1000000" min="0" step="10000">
+            </div>
+            <span class="hint">例：100万円 → 1,000,000</span>
+          </div>
+
+          <div class="form-group">
+            <label for="monthlyAmount">毎月の積立額</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="monthlyAmount" value="30000" min="0" step="1000">
+            </div>
+            <span class="hint">積み立てない場合は 0</span>
+          </div>
+
+          <div class="form-group">
+            <label for="annualRate">年利率</label>
+            <div class="input-wrapper">
+              <input type="number" id="annualRate" value="5" min="0" max="100" step="0.1">
+              <span class="unit suffix">%</span>
+            </div>
+            <span class="hint">例：S&amp;P500の長期平均 ≈ 7〜10%</span>
+          </div>
+
+          <div class="form-group">
+            <label for="years">運用年数</label>
+            <div class="input-wrapper">
+              <input type="number" id="years" value="20" min="1" max="50" step="1">
+              <span class="unit suffix">年</span>
+            </div>
+            <span class="hint">1〜50年</span>
           </div>
         </div>
-        <div class="chart-wrapper">
-          <canvas id="growthChart"></canvas>
-        </div>
-      </div>
 
-      <div class="card table-card">
-        <h3>年別内訳</h3>
-        <div class="table-wrapper">
-          <table id="breakdownTable">
-            <thead>
-              <tr>
-                <th>年</th>
-                <th>元本累計</th>
-                <th>運用益</th>
-                <th>資産合計</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
+        <div class="interest-type-group">
+          <span class="interest-type-label">計算方式</span>
+          <div class="toggle-group">
+            <label class="toggle-option">
+              <input type="radio" name="interestType" value="compound" checked>
+              <span>複利</span>
+            </label>
+            <label class="toggle-option">
+              <input type="radio" name="interestType" value="simple">
+              <span>単利</span>
+            </label>
+          </div>
         </div>
-      </div>
-    </section>
+
+        <button class="btn-calculate" onclick="calculate()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/>
+            <path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/>
+          </svg>
+          計算する
+        </button>
+      </section>
+
+      <section class="results" id="results">
+        <div class="summary-grid">
+          <div class="summary-card principal">
+            <span class="summary-label">元本合計</span>
+            <span class="summary-value" id="totalPrincipal">—</span>
+          </div>
+          <div class="summary-card profit">
+            <span class="summary-label">運用益</span>
+            <span class="summary-value" id="totalProfit">—</span>
+          </div>
+          <div class="summary-card total">
+            <span class="summary-label">最終資産</span>
+            <span class="summary-value" id="totalAmount">—</span>
+          </div>
+          <div class="summary-card rate">
+            <span class="summary-label">資産倍率</span>
+            <span class="summary-value" id="multiplier">—</span>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-header">
+            <h3>資産推移グラフ</h3>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-dot dot-total"></span>最終資産</span>
+              <span class="legend-item"><span class="legend-dot dot-principal"></span>元本</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <h3>年別内訳</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>年</th>
+                  <th>元本累計</th>
+                  <th>運用益</th>
+                  <th>資産合計</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── 老後資金シミュレーター ── -->
+    <div id="tab-retirement" class="tab-panel">
+      <section class="card input-card">
+        <h2 class="section-title">老後資金の設定</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="r-expenses">月の生活費</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="r-expenses" value="250000" min="0" step="5000">
+            </div>
+            <span class="hint">総務省調査：高齢夫婦2人 約26万円/月</span>
+          </div>
+
+          <div class="form-group">
+            <label for="r-pension">月の年金予想額</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="r-pension" value="150000" min="0" step="5000">
+            </div>
+            <span class="hint">
+              <a href="https://www.nenkin.go.jp/n_net/" target="_blank" rel="noopener">ねんきんネット</a>で確認できます
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="r-retirementAge">定年の年齢</label>
+            <div class="input-wrapper">
+              <input type="number" id="r-retirementAge" value="65" min="50" max="80" step="1">
+              <span class="unit suffix">歳</span>
+            </div>
+            <span class="hint">一般的な定年：60〜65歳</span>
+          </div>
+
+          <div class="form-group">
+            <label for="r-lifeExpectancy">何歳まで生きるか</label>
+            <div class="input-wrapper">
+              <input type="number" id="r-lifeExpectancy" value="90" min="60" max="120" step="1">
+              <span class="unit suffix">歳</span>
+            </div>
+            <span class="hint">長めに設定しておくのが安心</span>
+          </div>
+
+          <div class="form-group">
+            <label for="r-severance">退職金</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="r-severance" value="2000000" min="0" step="100000">
+            </div>
+            <span class="hint">ない場合は 0</span>
+          </div>
+        </div>
+
+        <button class="btn-calculate btn-retirement" onclick="calculateRetirement()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/>
+            <path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/>
+          </svg>
+          計算する
+        </button>
+      </section>
+
+      <section class="results" id="r-results">
+        <div class="summary-grid">
+          <div class="summary-card r-period">
+            <span class="summary-label">老後期間</span>
+            <span class="summary-value" id="r-period-val">—</span>
+          </div>
+          <div class="summary-card r-expenses-card">
+            <span class="summary-label">老後の総生活費</span>
+            <span class="summary-value" id="r-totalExpenses">—</span>
+          </div>
+          <div class="summary-card r-income">
+            <span class="summary-label">年金＋退職金</span>
+            <span class="summary-value" id="r-totalIncome">—</span>
+          </div>
+          <div class="summary-card r-self" id="r-self-card">
+            <span class="summary-label" id="r-self-label">自己準備が必要な額</span>
+            <span class="summary-value" id="r-selfFunding">—</span>
+          </div>
+        </div>
+
+        <div id="r-surplus-msg" class="surplus-banner" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          年金と退職金だけで老後の生活費をまかなえます。
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-header">
+            <h3>老後の資産取り崩しシミュレーション</h3>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-dot dot-r-balance"></span>残資産</span>
+              <span class="legend-item"><span class="legend-dot dot-r-pension"></span>年金累計</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="retirementChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <h3>年齢別の収支内訳</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>年齢</th>
+                  <th>年間生活費</th>
+                  <th>年間年金収入</th>
+                  <th>年間不足額</th>
+                  <th>残資産</th>
+                </tr>
+              </thead>
+              <tbody id="r-tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <footer>
     <div class="container">
-      <p>※ このシミュレーターは参考情報の提供を目的としており、投資の成果を保証するものではありません。実際の運用では税金・手数料等が発生します。</p>
+      <p>※ このシミュレーターは参考情報の提供を目的としており、投資の成果や老後の資産を保証するものではありません。実際の運用では税金・手数料・インフレ等が発生します。</p>
     </div>
   </footer>
 
