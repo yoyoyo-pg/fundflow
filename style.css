@@ -184,56 +184,6 @@ input[type="number"]::-webkit-outer-spin-button {
   margin-left: 4px;
 }
 
-/* Interest type toggle */
-.interest-type-group {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.interest-type-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-}
-
-.toggle-group {
-  display: flex;
-  background: var(--bg);
-  border-radius: 999px;
-  padding: 4px;
-  gap: 4px;
-  border: 1.5px solid var(--border);
-}
-
-.toggle-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.toggle-option input[type="radio"] {
-  display: none;
-}
-
-.toggle-option span {
-  padding: 6px 20px;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.toggle-option input:checked + span {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
-}
-
 /* Calculate button */
 .btn-calculate {
   display: flex;
@@ -579,7 +529,4 @@ footer p {
   thead th { padding: 10px 10px; font-size: 0.72rem; }
   tbody td  { padding: 8px 10px; font-size: 0.8rem; }
 
-  /* 複利/単利トグル */
-  .interest-type-group { flex-wrap: wrap; gap: 10px; }
-  .toggle-option span { padding: 6px 14px; }
 }

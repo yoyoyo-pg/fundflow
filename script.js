@@ -16,10 +16,6 @@ function switchTab(tabId) {
 
 // ── 投資シミュレーター ──────────────────────────────
 
-function getInterestType() {
-  return document.querySelector('input[name="interestType"]:checked').value;
-}
-
 function buildYearlyData(initial, monthly, rate, years) {
   const rows = [];
   let principal = initial;
@@ -39,42 +35,14 @@ function buildYearlyData(initial, monthly, rate, years) {
   return rows;
 }
 
-function buildYearlyDataSimple(initial, monthly, rate, years) {
-  const rows = [];
-  let principal = initial;
-
-  for (let y = 1; y <= years; y++) {
-    const annualContribution = monthly * 12;
-    principal += annualContribution;
-
-    const interestOnInitial = initial * rate * y;
-    let interestOnContributions = 0;
-    for (let k = 1; k <= y; k++) {
-      interestOnContributions += annualContribution * rate * (y - k + 0.5);
-    }
-    const profit = interestOnInitial + interestOnContributions;
-
-    rows.push({
-      year: y,
-      principal: Math.round(principal),
-      profit: Math.round(profit),
-      total: Math.round(principal + profit),
-    });
-  }
-  return rows;
-}
-
 function calculate() {
   const initial = parseFloat(document.getElementById('initialAmount').value) || 0;
   const monthly = parseFloat(document.getElementById('monthlyAmount').value) || 0;
   const rate = (parseFloat(document.getElementById('annualRate').value) || 0) / 100;
   const years = parseInt(document.getElementById('years').value) || 1;
   const currentAge = parseInt(document.getElementById('currentAge').value) || 0;
-  const isCompound = getInterestType() === 'compound';
 
-  const data = isCompound
-    ? buildYearlyData(initial, monthly, rate, years)
-    : buildYearlyDataSimple(initial, monthly, rate, years);
+  const data = buildYearlyData(initial, monthly, rate, years);
 
   const last = data[data.length - 1];
   const multiplier = last.principal > 0 ? (last.total / last.principal).toFixed(2) : '—';
