@@ -1,0 +1,18 @@
+{
+  "name": "FundFlow - 投資シミュレーター",
+  "short_name": "FundFlow",
+  "description": "初期投資額・月次積立から将来資産をかんたん計算",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
