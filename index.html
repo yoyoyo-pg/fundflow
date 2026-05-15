@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FundFlow - 投資・老後資金シミュレーター</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4F46E5">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="FundFlow">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -34,6 +30,14 @@
           <polyline points="16 7 22 7 22 13"/>
         </svg>
         投資シミュレーター
+      </button>
+      <button class="tab-btn" onclick="switchTab('dividend')" id="tab-btn-dividend">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="6" width="20" height="12" rx="2"/>
+          <circle cx="12" cy="12" r="2"/>
+          <path d="M6 12h.01M18 12h.01"/>
+        </svg>
+        配当シミュレーター
       </button>
       <button class="tab-btn" onclick="switchTab('retirement')" id="tab-btn-retirement">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -154,6 +158,145 @@
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── 配当シミュレーター ── -->
+    <div id="tab-dividend" class="tab-panel">
+      <section class="card input-card">
+        <h2 class="section-title">配当シミュレーション設定 <span class="schd-badge">SCHD参考値</span></h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="d-initial">初期投資額</label>
+            <div class="input-wrapper">
+              <span class="unit prefix">¥</span>
+              <input type="number" id="d-initial" value="1000000" min="0" step="10000">
+            </div>
+            <span class="hint">例：100万円 → 1,000,000</span>
+          </div>
+
+          <div class="form-group">
+            <label for="d-yield">配当利回り</label>
+            <div class="input-wrapper">
+              <input type="number" id="d-yield" value="3.5" min="0" max="30" step="0.1">
+              <span class="unit suffix">%</span>
+            </div>
+            <span class="hint">SCHD直近実績 ≈ 3.5%</span>
+          </div>
+
+          <div class="form-group">
+            <label for="d-divGrowth">年間増配率</label>
+            <div class="input-wrapper">
+              <input type="number" id="d-divGrowth" value="10" min="0" max="50" step="0.1">
+              <span class="unit suffix">%</span>
+            </div>
+            <span class="hint">SCHD過去10年平均 ≈ 10%</span>
+          </div>
+
+          <div class="form-group">
+            <label for="d-priceGrowth">株価上昇率</label>
+            <div class="input-wrapper">
+              <input type="number" id="d-priceGrowth" value="8" min="0" max="50" step="0.1">
+              <span class="unit suffix">%</span>
+            </div>
+            <span class="hint">過去実績参考。将来の保証はありません</span>
+          </div>
+
+          <div class="form-group">
+            <label for="d-years">運用年数</label>
+            <div class="input-wrapper">
+              <input type="number" id="d-years" value="20" min="1" max="50" step="1">
+              <span class="unit suffix">年</span>
+            </div>
+            <span class="hint">1〜50年</span>
+          </div>
+
+          <div class="form-group">
+            <label for="d-currentAge">現在の年齢 <span class="optional-badge">任意</span></label>
+            <div class="input-wrapper">
+              <input type="number" id="d-currentAge" placeholder="例：30" min="0" max="100" step="1">
+              <span class="unit suffix">歳</span>
+            </div>
+            <span class="hint">入力すると「何歳の時にいくら」が分かります</span>
+          </div>
+        </div>
+
+        <div class="interest-type-group">
+          <span class="interest-type-label">配当の扱い</span>
+          <div class="toggle-group">
+            <label class="toggle-option">
+              <input type="radio" name="reinvestType" value="reinvest" checked>
+              <span>再投資</span>
+            </label>
+            <label class="toggle-option">
+              <input type="radio" name="reinvestType" value="cash">
+              <span>現金受取</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-calculate btn-dividend" onclick="calculateDividend()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/>
+            <path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/>
+          </svg>
+          計算する
+        </button>
+      </section>
+
+      <section class="results" id="d-results">
+        <div class="summary-grid">
+          <div class="summary-card d-dividend-card">
+            <span class="summary-label">年間配当金（最終年）</span>
+            <span class="summary-value" id="d-finalDividend">—</span>
+          </div>
+          <div class="summary-card d-yoc-card">
+            <span class="summary-label">コストベース利回り</span>
+            <span class="summary-value" id="d-yoc">—</span>
+          </div>
+          <div class="summary-card d-cum-card">
+            <span class="summary-label">累計受取配当金</span>
+            <span class="summary-value" id="d-cumDividend">—</span>
+          </div>
+          <div class="summary-card d-value-card">
+            <span class="summary-label">最終評価額</span>
+            <span class="summary-value" id="d-finalValue">—</span>
+          </div>
+        </div>
+
+        <div id="d-payback-msg" class="payback-banner" style="display:none"></div>
+
+        <div class="card chart-card">
+          <div class="chart-header">
+            <h3>配当・評価額の推移</h3>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-dot dot-d-dividend"></span>年間配当金</span>
+              <span class="legend-item"><span class="legend-dot dot-d-value"></span>評価額</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="dividendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <h3>年別配当内訳</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>年</th>
+                  <th>評価額</th>
+                  <th>年間配当金</th>
+                  <th>累計配当金</th>
+                  <th>YOC</th>
+                </tr>
+              </thead>
+              <tbody id="d-tableBody"></tbody>
             </table>
           </div>
         </div>

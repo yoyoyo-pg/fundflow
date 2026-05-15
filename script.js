@@ -2,6 +2,7 @@
 
 let chart = null;
 let retirementChart = null;
+let dividendChart = null;
 
 function fmt(value) {
   return '¥' + Math.round(value).toLocaleString('ja-JP');
@@ -111,6 +112,166 @@ function renderInvestmentTable(data, currentAge) {
       <td>${fmt(r.principal)}</td>
       <td>${fmt(r.profit)}</td>
       <td>${fmt(r.total)}</td>
+    </tr>
+  `).join('');
+}
+
+// ── 配当シミュレーター ────────────────────────────────
+
+function buildDividendData(initial, yieldRate, divGrowth, priceGrowth, years, reinvest) {
+  const rows = [];
+  let shares = initial; // normalized: initial price = ¥1 per unit
+  let cumulativeDividend = 0;
+
+  for (let y = 1; y <= years; y++) {
+    const price = Math.pow(1 + priceGrowth, y);
+    const divPerShare = yieldRate * Math.pow(1 + divGrowth, y - 1);
+    const annualDividend = shares * divPerShare;
+    cumulativeDividend += annualDividend;
+
+    if (reinvest) {
+      shares += annualDividend / price;
+    }
+
+    const stockValue = shares * price;
+    const yoc = (annualDividend / initial) * 100;
+
+    rows.push({
+      year: y,
+      annualDividend: Math.round(annualDividend),
+      stockValue: Math.round(stockValue),
+      cumulativeDividend: Math.round(cumulativeDividend),
+      yoc: yoc.toFixed(2),
+    });
+  }
+  return rows;
+}
+
+function calculateDividend() {
+  const initial     = parseFloat(document.getElementById('d-initial').value) || 0;
+  const yieldRate   = (parseFloat(document.getElementById('d-yield').value) || 0) / 100;
+  const divGrowth   = (parseFloat(document.getElementById('d-divGrowth').value) || 0) / 100;
+  const priceGrowth = (parseFloat(document.getElementById('d-priceGrowth').value) || 0) / 100;
+  const years       = parseInt(document.getElementById('d-years').value) || 1;
+  const currentAge  = parseInt(document.getElementById('d-currentAge').value) || 0;
+  const reinvest    = document.querySelector('input[name="reinvestType"]:checked').value === 'reinvest';
+
+  const data = buildDividendData(initial, yieldRate, divGrowth, priceGrowth, years, reinvest);
+  const last = data[data.length - 1];
+
+  const paybackRow  = data.find(r => r.cumulativeDividend >= initial);
+  const paybackYear = paybackRow ? paybackRow.year : null;
+
+  document.getElementById('d-finalDividend').textContent = fmt(last.annualDividend);
+  document.getElementById('d-yoc').textContent           = last.yoc + '%';
+  document.getElementById('d-cumDividend').textContent   = fmt(last.cumulativeDividend);
+  document.getElementById('d-finalValue').textContent    = fmt(last.stockValue);
+
+  const paybackEl = document.getElementById('d-payback-msg');
+  if (paybackYear) {
+    const ageStr = currentAge > 0 ? `（${currentAge + paybackYear}歳）` : '';
+    paybackEl.textContent  = `累計配当が初期投資額を回収するのは ${paybackYear}年目${ageStr} です。`;
+    paybackEl.style.display = '';
+  } else {
+    paybackEl.style.display = 'none';
+  }
+
+  renderDividendChart(data, currentAge);
+  renderDividendTable(data, currentAge);
+}
+
+function renderDividendChart(data, currentAge) {
+  if (dividendChart) dividendChart.destroy();
+  const ctx = document.getElementById('dividendChart').getContext('2d');
+  const labels = data.map(r =>
+    currentAge > 0 ? (currentAge + r.year) + '歳' : r.year + '年'
+  );
+  const fmtAxis = v => {
+    if (v >= 100_000_000) return (v / 100_000_000).toFixed(0) + '億';
+    if (v >= 10_000)      return (v / 10_000).toFixed(0) + '万';
+    return v;
+  };
+  dividendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '年間配当金',
+          data: data.map(r => r.annualDividend),
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245, 158, 11, 0.15)',
+          borderWidth: 2.5,
+          pointRadius: data.length <= 20 ? 4 : 2,
+          pointHoverRadius: 6,
+          fill: true,
+          tension: 0.35,
+          yAxisID: 'y',
+        },
+        {
+          label: '評価額',
+          data: data.map(r => r.stockValue),
+          borderColor: '#4F46E5',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: data.length <= 20 ? 3 : 1,
+          pointHoverRadius: 5,
+          fill: false,
+          tension: 0.35,
+          borderDash: [5, 3],
+          yAxisID: 'y1',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+          },
+          backgroundColor: '#1E293B',
+          titleColor: '#94A3B8',
+          bodyColor: '#F8FAFC',
+          padding: 12,
+          cornerRadius: 8,
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94A3B8', font: { size: 11 } },
+        },
+        y: {
+          grid: { color: '#F1F5F9' },
+          ticks: { color: '#F59E0B', font: { size: 11 }, callback: fmtAxis },
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { color: '#4F46E5', font: { size: 11 }, callback: fmtAxis },
+        },
+      },
+    },
+  });
+}
+
+function renderDividendTable(data, currentAge) {
+  const showAge = currentAge > 0;
+  document.querySelector('#tab-dividend thead tr').cells[0].textContent =
+    showAge ? '年齢' : '年';
+  document.getElementById('d-tableBody').innerHTML = data.map(r => `
+    <tr>
+      <td>${showAge ? (currentAge + r.year) + '歳' : r.year}</td>
+      <td>${fmt(r.stockValue)}</td>
+      <td>${fmt(r.annualDividend)}</td>
+      <td>${fmt(r.cumulativeDividend)}</td>
+      <td>${r.yoc}%</td>
     </tr>
   `).join('');
 }
@@ -265,5 +426,6 @@ function chartOptions(yFormatter) {
 
 document.addEventListener('DOMContentLoaded', () => {
   calculate();
+  calculateDividend();
   calculateRetirement();
 });

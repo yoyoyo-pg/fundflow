@@ -184,6 +184,56 @@ input[type="number"]::-webkit-outer-spin-button {
   margin-left: 4px;
 }
 
+/* Interest type / reinvestment toggle */
+.interest-type-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.interest-type-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.toggle-group {
+  display: flex;
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+  border: 1.5px solid var(--border);
+}
+
+.toggle-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-option input[type="radio"] {
+  display: none;
+}
+
+.toggle-option span {
+  padding: 6px 20px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.toggle-option input:checked + span {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
 /* Calculate button */
 .btn-calculate {
   display: flex;
@@ -454,6 +504,56 @@ tbody tr:last-child td {
 .dot-r-balance { background: var(--warning); }
 .dot-r-pension { background: var(--success); }
 
+/* ── 配当シミュレーター固有スタイル ── */
+.btn-dividend {
+  background: #10B981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.btn-dividend:hover {
+  background: #059669;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+}
+
+.schd-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #ECFDF5;
+  border: 1px solid #6EE7B7;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #065F46;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.summary-card.d-dividend-card::before { background: var(--warning); }
+.summary-card.d-yoc-card::before      { background: var(--success); }
+.summary-card.d-cum-card::before      { background: var(--primary); }
+.summary-card.d-value-card::before    { background: var(--accent); }
+
+.summary-card.d-dividend-card .summary-value { color: var(--warning); }
+.summary-card.d-yoc-card      .summary-value { color: var(--success); }
+.summary-card.d-cum-card      .summary-value { color: var(--primary); }
+.summary-card.d-value-card    .summary-value { color: var(--accent); }
+
+.dot-d-dividend { background: var(--warning); }
+.dot-d-value    { background: var(--primary); }
+
+.payback-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: #FFFBEB;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-sm);
+  color: #92400E;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .hint a {
   color: var(--primary);
   text-decoration: none;
@@ -528,5 +628,9 @@ footer p {
   /* テーブル */
   thead th { padding: 10px 10px; font-size: 0.72rem; }
   tbody td  { padding: 8px 10px; font-size: 0.8rem; }
+
+  /* 再投資トグル */
+  .interest-type-group { flex-wrap: wrap; gap: 10px; }
+  .toggle-option span { padding: 6px 14px; }
 
 }
