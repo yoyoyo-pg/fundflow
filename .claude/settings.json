@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"$branch = git branch --show-current; if ($branch -eq 'main') { Write-Error 'Direct commits to main are not allowed. Use feature/<name> or claude/<name> branch.'; exit 1 }\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"$input = $env:CLAUDE_TOOL_INPUT | ConvertFrom-Json; if ($input.file_path -match 'script\\.js$') { Write-Host '[Reminder] script.js を変更しました。ブラウザで複利計算・グラフを確認してください。' }\""
+          }
+        ]
+      }
+    ]
+  }
+}
