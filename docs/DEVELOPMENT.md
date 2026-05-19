@@ -93,9 +93,9 @@ GitHub Web UI で PR を作成し、レビューを待ちます。
 ### 1. DevTools を使う
 
 ```javascript
-// DevTools > Console で計算をテスト
-calculateCompound(100000, 10000, 0.05, 10)
-// 出力: [{ year: 1, balance: 232500, gain: 32500 }, ...]
+// DevTools > Console で計算をテスト（利率は小数: 5% → 0.05）
+buildYearlyData(100000, 10000, 0.05, 10)
+// 出力: [{ year: 1, principal: 220000, profit: 11000, total: 231000 }, ...]
 ```
 
 ### 2. Chrome DevTools Network タブ
@@ -178,16 +178,20 @@ curl -s https://yoyoyo-pg.github.io/fundflow/ | head -20
 
 ```
 fundflow/
-├── index.html         # メイン HTML（マークアップ + インラインスクリプト）
+├── index.html         # メイン HTML（マークアップ・タブナビゲーション）
 ├── style.css          # グローバルスタイル
-├── script.js          # 計算ロジック・イベントハンドラー
+├── script.js          # 計算ロジック・イベントハンドラー（3シミュレーター分）
+├── manifest.json      # PWA マニフェスト
+├── icons/             # アプリアイコン
 ├── README.md          # プロジェクト概要・計算式
 ├── CLAUDE.md          # AI エージェント向けガイド
 ├── .agents/
 │   └── AGENTS.md      # AI タスク指示書
 ├── .claude/
-│   └── rules/
-│       └── core.md    # コンテキスト注入用ルール
+│   ├── rules/
+│   │   └── core.md    # コンテキスト注入用ルール
+│   ├── skills/        # Claude Code カスタムスキル
+│   └── agents/        # Claude Code カスタムエージェント
 ├── docs/
 │   ├── DEVELOPMENT.md # このファイル
 │   └── LESSONS.md     # 教訓・gotchas
