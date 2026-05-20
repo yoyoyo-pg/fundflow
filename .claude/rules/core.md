@@ -114,7 +114,7 @@ function calculateCompound(principal, monthly, annualRate, years) {
 - [ ] .agents/AGENTS.md を更新（質問と回答）
 - [ ] .claude/rules/core.md を更新（ルール・コード品質基準）
 - [ ] docs/DEVELOPMENT.md を更新（セットアップ・コマンド）
-- [ ] docs/LESSONS.md に変更理由を記録
+- [ ] tasks/LESSONS.md に変更理由を記録
 
 ## 参考ファイル
 
