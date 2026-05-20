@@ -113,7 +113,6 @@ function calculateCompound(principal, monthly, annualRate, years) {
 - [ ] CLAUDE.md を更新（技術スタック・コマンド・ファイル構成）
 - [ ] .agents/AGENTS.md を更新（質問と回答）
 - [ ] .claude/rules/core.md を更新（ルール・コード品質基準）
-- [ ] docs/DEVELOPMENT.md を更新（セットアップ・コマンド）
 - [ ] tasks/LESSONS.md に変更理由を記録
 
 ## 参考ファイル
